@@ -1,0 +1,5 @@
+rootProject.name = 'main'
+include 'settlement-service'
+include 'restaurant-service'
+include 'order-service'
+include 'deliveryman-service'
