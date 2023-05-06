@@ -7,6 +7,7 @@ import com.imooc.food.orderservice.dto.OrderMessageDTO;
 import com.imooc.food.orderservice.enummeration.OrderStatus;
 import com.imooc.food.orderservice.po.OrderDetailPO;
 import com.rabbitmq.client.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeoutException;
 
 @Service
+@Slf4j
 public class OrderMessageService {
 
     @Autowired
@@ -25,15 +27,15 @@ public class OrderMessageService {
     @Autowired
     private OrderDetailDao orderDetailDao;
 
+    @Autowired
+    private Channel channel;
+
     /**
      * 申明消息队列，交换机，绑定，消息处理
      */
     @Async
-    public void handleMessage() {
-        ConnectionFactory connectionFactory = new ConnectionFactory();
-        connectionFactory.setHost("localhost");
-        try (Connection connection = connectionFactory.newConnection();
-             Channel channel = connection.createChannel()){
+    public void handleMessage() throws IOException, InterruptedException {
+
             // order和restaurant两个微服务交换数据使用
             channel.exchangeDeclare("exchange.order.restaurant",
                     BuiltinExchangeType.DIRECT,
@@ -92,13 +94,6 @@ public class OrderMessageService {
                 Thread.sleep(100000);
             }
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (TimeoutException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 
 
     }

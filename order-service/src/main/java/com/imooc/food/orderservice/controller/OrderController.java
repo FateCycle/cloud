@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 
 @Slf4j
 @RestController
@@ -17,7 +19,7 @@ public class OrderController {
     private OrderService orderService;
 
     @PostMapping("/orders")
-    public void createOrder(@RequestBody OrderCreateVO orderCreateVO) {
+    public void createOrder(@RequestBody OrderCreateVO orderCreateVO) throws IOException {
         log.info("createOrder:orderCreateVO:{}" , orderCreateVO);
         orderService.createOrder(orderCreateVO);
     }
