@@ -8,15 +8,15 @@ import org.springframework.context.annotation.Configuration;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
-@Slf4j
-@Configuration
-public class RabbitConfig {
-
-    @Autowired
-    OrderMessageService orderMessageService;
-
-    @Autowired
-    public void startListenMessage() throws IOException, TimeoutException, InterruptedException {
-        orderMessageService.handleMessage();
-    }
-}
+//@Slf4j
+//@Configuration
+//public class RabbitConfig {
+//
+//    @Autowired
+//    OrderMessageService orderMessageService;
+//
+//    @Autowired
+//    public void startListenMessage() throws IOException, TimeoutException, InterruptedException {
+//        orderMessageService.handleMessage();
+//    }
+//}

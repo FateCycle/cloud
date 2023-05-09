@@ -36,6 +36,7 @@ public class OrderMessageService {
         ConnectionFactory connectionFactory = new ConnectionFactory();
         connectionFactory.setHost("localhost");
 
+
         try(Connection connection = connectionFactory.newConnection();
             Channel channel = connection.createChannel())  {
 

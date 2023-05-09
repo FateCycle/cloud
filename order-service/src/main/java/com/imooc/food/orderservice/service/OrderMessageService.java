@@ -7,6 +7,7 @@ import com.imooc.food.orderservice.dto.OrderMessageDTO;
 import com.imooc.food.orderservice.enummeration.OrderStatus;
 import com.imooc.food.orderservice.po.OrderDetailPO;
 import com.rabbitmq.client.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeoutException;
 
+@Slf4j
 @Service
 public class OrderMessageService {
 
@@ -25,96 +27,15 @@ public class OrderMessageService {
     @Autowired
     private OrderDetailDao orderDetailDao;
 
-    /**
-     * 申明消息队列，交换机，绑定，消息处理
-     */
-    @Async
-    public void handleMessage() {
-        ConnectionFactory connectionFactory = new ConnectionFactory();
-        connectionFactory.setHost("localhost");
-        try (Connection connection = connectionFactory.newConnection();
-             Channel channel = connection.createChannel()){
-            // order和restaurant两个微服务交换数据使用
-            channel.exchangeDeclare("exchange.order.restaurant",
-                    BuiltinExchangeType.DIRECT,
-                    true,
-                    false,
-                    null);
-
-            channel.queueDeclare("queue.order",
-                    true,
-                    false,false,null);
-
-            channel.queueBind("queue.order",
-                    "exchange.order.restaurant",
-                    "key.order");
 
 
-            // order和restaurant两个微服务交换数据使用
-            channel.exchangeDeclare("exchange.order.deliveryman",
-                    BuiltinExchangeType.DIRECT,
-                    true,
-                    false,
-                    null);
+    public void handleMessage(OrderMessageDTO orderMessageDTO) {
 
-            channel.queueBind("queue.order",
-                    "exchange.order.deliveryman",
-                    "key.order");
-
-
-            channel.exchangeDeclare("exchange.order.settlement",
-                    BuiltinExchangeType.DIRECT,
-                    true,
-                    false,
-                    null);
-
-            channel.queueBind("queue.order",
-                    "exchange.order.settlement",
-                    "key.order");
-
-
-
-            channel.exchangeDeclare("exchange.order.reward",
-                    BuiltinExchangeType.TOPIC,
-                    true,
-                    false,
-                    null);
-
-            channel.queueBind("queue.order",
-                    "exchange.order.reward",
-                    "key.order");
-
-            // 消费队列，自动回调
-            channel.basicConsume("queue.order",true,deliverCallback,consumerTag -> {});
-
-
-            while (true) {
-                Thread.sleep(100000);
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (TimeoutException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-
-    }
-
-
-    DeliverCallback deliverCallback = (consumerTag, message)->{
-
-        String messageBody = new String(message.getBody());
-
+        log.info("handleMessage:messageBody:{}",orderMessageDTO);
         ConnectionFactory connectionFactory = new ConnectionFactory();
         connectionFactory.setHost("localhost");
 
         try {
-            // 将消息体反序列化成DTO
-            OrderMessageDTO orderMessageDTO = objectMapper
-                    .readValue(messageBody,OrderMessageDTO.class);
 
             // 数据库中读取订单
             OrderDetailPO orderDetailPO = orderDetailDao.selectOrder(orderMessageDTO.getOrderId());

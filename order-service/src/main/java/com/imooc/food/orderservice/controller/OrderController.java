@@ -2,6 +2,7 @@ package com.imooc.food.orderservice.controller;
 
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.imooc.food.orderservice.service.OrderService;
 import com.imooc.food.orderservice.vo.OrderCreateVO;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +18,7 @@ public class OrderController {
     private OrderService orderService;
 
     @PostMapping("/orders")
-    public void createOrder(@RequestBody OrderCreateVO orderCreateVO) {
+    public void createOrder(@RequestBody OrderCreateVO orderCreateVO) throws JsonProcessingException {
         log.info("createOrder:orderCreateVO:{}" , orderCreateVO);
         orderService.createOrder(orderCreateVO);
     }
